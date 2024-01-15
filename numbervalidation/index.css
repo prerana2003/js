@@ -1,0 +1,65 @@
+#root{
+    margin: auto;
+    margin-top: 100px;
+    font-family:Arial, Helvetica, sans-serif;
+    text-align: center;
+    height: fit-content;
+    width: fit-content;
+    padding: 50px;
+    border:1px solid black;
+    border-radius: 5px;
+}
+
+#entNo_lbl{
+    margin: 10px;
+    margin-right: 0;
+    font-size: large;
+}
+
+#inp_No{
+    margin: 10px;
+    padding: 7px;
+    border-radius: 7px;
+    border: 1;
+}
+
+#subBtn{
+    margin: 10px;
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    background-color: #33FF52;
+    border-radius: 5px;
+    border-color: green;
+}
+
+#reset_btn{
+    margin: 10px;
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    background-color: #ff3333;
+    border-radius: 5px;
+    border-color: rgb(131, 25, 25);
+}
+
+#error{
+    margin-top: -10px;
+    color: red;
+    margin-left: 105px;
+    text-align: left;
+}
+
+#resultStr{
+    font-weight: bold;
+    font-size: 23px;
+    text-align: center;
+    color: black;
+    display: inline-block;
+}
+
+#myResult{
+    font-weight: bold;
+    color: green;
+    display: inline-block;
+}
