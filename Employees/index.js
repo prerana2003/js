@@ -1,14 +1,16 @@
 let employees = {}
 let empObj = {};
-//     name: "tena",
-//     salary: 25425,
-//     designation: "comp",
-//     deptid: "D1"
-// }
+let filterobj = {}
+let empNameArr = [];
+
 
 let num = 1;
 const addEmp = (empObj) =>{
-    let Emp_id = "Emp" + num;
+    if(empObj.name === undefined){
+        alert("please enter information")
+    }
+    else{
+        let Emp_id = "Emp" + num;
         employees[Emp_id] = {
             ID: Emp_id,
             Name: empObj.name,
@@ -16,29 +18,29 @@ const addEmp = (empObj) =>{
             Designation: empObj.designation,
             Department_ID: empObj.deptid
         }
+        num++;
+        let list = document.getElementById("emp_list")
+        const listItem = document.createElement("li")
+        listItem.textContent= employees[Emp_id].Name
+        list.appendChild(listItem)
+        empObj.name = undefined
+    }
     
-    let list = document.getElementById("emp_list")
-        for(let x in employees){
-            if(employees.hasOwnProperty(x)){
-                const listItem = document.createElement("li")
-                listItem.textContent= employees[x].Name
-                list.appendChild(listItem)
-            }
-        }
-    // return "Employee Successfully created";
+    openForm();
 }
 
+console.log(employees)
 
-
-// addEmp(empObj)
-
-// addEmp("Teena",30000,"Soft. Dev","D2")
-// addEmp("Nita",90000,"Manager","D1")
-// addEmp("Nita",70000,"Project Manager","D1")
-// addEmp("Neela",40000,"HR","D2")
-// addEmp("Minu",80000,"DevOps","D3")
-// addEmp("Sita",30000,"HR","D2")
-// addEmp("Rita",30000,"HR","D2")
+function addInList(){
+    let list = document.getElementById("emp_list")
+    for(let x in employees){
+        if(employees.hasOwnProperty(x)){
+            const listItem = document.createElement("li")
+            listItem.textContent= employees[x].Name
+            list.appendChild(listItem)
+        }
+    }
+}
 
 
 const renderUI = () =>{
@@ -76,18 +78,61 @@ const renderUI = () =>{
     sidebardiv.setAttribute("id","side_bar_div")
     contentdiv.appendChild(sidebardiv)
 
+    let searchFilterDiv = document.createElement("div")
+    searchFilterDiv.setAttribute("id","search_filter_div")
+    sidebardiv.appendChild(searchFilterDiv)
+
+    // ------------searchByName-------------------
+    let searchdiv = document.createElement("div")
+    searchdiv.setAttribute("id","search_div")
+    searchFilterDiv.appendChild(searchdiv)
+
+    let searchInp = document.createElement("input")
+    searchInp.setAttribute("id","search_Inp")
+    searchInp.placeholder = "Enter name"
+    searchInp.addEventListener('input',function(){
+        filterobj.searchinp = searchInp.value
+    })
+    searchdiv.appendChild(searchInp)
+
+    let searchbtn = document.createElement("button")
+    searchbtn.setAttribute("id","search_btn")
+    searchbtn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
+    searchbtn.addEventListener('click',searching)
+    searchdiv.appendChild(searchbtn)
+    
+    let filterdiv = document.createElement("div")
+    filterdiv.setAttribute("id","filter_div")
+    searchFilterDiv.appendChild(filterdiv)
+
+    let ascBtn = document.createElement("button")
+    ascBtn.setAttribute("id","asc_btn")
+    ascBtn.setAttribute("class","sortbtn")
+    ascBtn.innerHTML = '<i class="fa-solid fa-sort-up"></i>'
+    ascBtn.addEventListener('click', function(){
+        ascendingSort();
+        ascBtn.style.backgroundColor = "blue"
+        // ascBtn.style.borderWidth = "3px"
+        
+    })
+    filterdiv.appendChild(ascBtn)
+
+    let dscBtn = document.createElement("button")
+    dscBtn.setAttribute("id","dsc_btn")
+    dscBtn.setAttribute("class","sortbtn")
+    dscBtn.innerHTML = '<i class="fa-solid fa-sort-down"></i>'
+    dscBtn.addEventListener('click', function(){
+        decendingSort();
+        dscBtn.style.backgroundColor = "blue"
+    })
+    filterdiv.appendChild(dscBtn)
+
+    let hrline = document.createElement("hr")
+    sidebardiv.appendChild(hrline)
 
     let list = document.createElement("ul")
     list.setAttribute("id","emp_list")
     sidebardiv.appendChild(list)
-
-    // for(let x in employees){
-    //     if(employees.hasOwnProperty(x)){
-    //         const listItem = document.createElement("li")
-    //         listItem.textContent= employees[x].Name
-    //         list.appendChild(listItem)
-    //     }
-    // }
 
     let maincontentdiv = document.createElement("div")
     maincontentdiv.setAttribute("id","main_content_div")
@@ -100,21 +145,25 @@ const renderUI = () =>{
     para.setAttribute("id","foot_para")
     para.innerHTML = "AYS Software Solution"
     foot.appendChild(para)
-    
 }
 
 const openForm = () =>{
 
     let main = document.getElementById("main_content_div")
+    main.innerHTML= "";
+
+    let formdiv = document.createElement("div")
+    formdiv.setAttribute("id","form_div")
+    main.appendChild(formdiv)
 
     let title = document.createElement("h1")
     title.textContent = "Add Employee"
-    main.appendChild(title)
+    formdiv.appendChild(title)
 
     let addEmpForm = document.createElement("form")
     addEmpForm.setAttribute("method","post")
     addEmpForm.setAttribute("id","add_emp_form")
-    main.appendChild(addEmpForm)
+    formdiv.appendChild(addEmpForm)
 
     let inpNameDiv = document.createElement("div")
     inpNameDiv.setAttribute("id","inp_Name_Div")
@@ -123,12 +172,12 @@ const openForm = () =>{
     let entName = document.createElement("label")
     entName.setAttribute("type","label")
     entName.setAttribute("id","enter_name")
-    entName.textContent = "Name: "
+    entName.textContent = "Name*: "
     inpNameDiv.appendChild(entName)
 
     let inpName = document.createElement("input")
     inpName.setAttribute("type","text")
-    inpName.setAttribute("name","name")
+    inpName.setAttribute("placeholder","Enter Name")
     inpName.setAttribute("id","inp_Name")
     inpName.addEventListener('input',function(event){
         if(event.target.id === "inp_Name"){
@@ -149,7 +198,7 @@ const openForm = () =>{
 
     let inpSalary = document.createElement("input")
     inpSalary.setAttribute("type","text")
-    inpSalary.setAttribute("name","salary")
+    inpSalary.setAttribute("placeholder","Enter Salary")
     inpSalary.setAttribute("id","inp_Salary")
     inpSalary.addEventListener('click',function(event){
         if(event.target.id === "inp_Salary"){
@@ -170,7 +219,7 @@ const openForm = () =>{
 
     let inpDesignation = document.createElement("input")
     inpDesignation.setAttribute("type","text")
-    inpDesignation.setAttribute("name","designation")
+    inpDesignation.setAttribute("placeholder","Enter Designation")
     inpDesignation.setAttribute("id","inp_Designation")
     inpDesignation.addEventListener('input',function(event){
         if(event.target.id === "inp_Designation"){
@@ -191,7 +240,7 @@ const openForm = () =>{
 
     let inpDeptID = document.createElement("input")
     inpDeptID.setAttribute("type","text")
-    inpDeptID.setAttribute("name","deptID")
+    inpDeptID.setAttribute("placeholder","Enter Department ID")
     inpDeptID.setAttribute("id","inp_DeptID")
     inpDeptID.addEventListener('input',function(event){
         if(event.target.id === "inp_DeptID"){
@@ -199,6 +248,10 @@ const openForm = () =>{
         }
     })
     inpDeptDiv.appendChild(inpDeptID)
+
+    let error = document.createElement("p")
+    error.setAttribute("id","displayerror")
+    addEmpForm.appendChild(error)
 
     let sub_res_div = document.createElement("div")
     sub_res_div.setAttribute("id","sub_res_div")
@@ -208,39 +261,102 @@ const openForm = () =>{
     submitBtn.setAttribute("id","submit_btn")
     submitBtn.textContent = "Submit"
     submitBtn.setAttribute("onclick","addEmp(empObj)")
-    // submitBtn.addEventListener('click',renderUI)
-    // submitBtn.addEventListener('click',function(){
-    //     addEmp(empObj);
-    //     // submit(employees);
-    // })
-    // submitBtn.setAttribute("onclick")
     sub_res_div.appendChild(submitBtn)
 
     let resetBtn = document.createElement("button")
     resetBtn.setAttribute("id","reset_btn")
     resetBtn.textContent = "Reset"
+    resetBtn.addEventListener('click', openForm)
     sub_res_div.appendChild(resetBtn)
 
     let cancelBtn = document.createElement("button")
     cancelBtn.setAttribute("id","cancel_btn")
     cancelBtn.textContent = "Cancel"
-    cancelBtn.addEventListener('click', renderUI);
+    cancelBtn.addEventListener('click', function(){
+        main.innerHTML= "";
+    });
     addEmpForm.appendChild(cancelBtn)
 }
 
 
 
-// console.log(employees)
-// function submit(employees){
-//     addEmp(empObj)
-//     const lst = document.getElementById("emp_list")
-//     // alert(employees[emp1].Name)
-//     for(let x in employees){
-//         if(employees.hasOwnProperty(x)){
-//             const listItem = document.createElement("li")
-//             listItem.textContent= employees[x].Name
-//             lst.appendChild(listItem)
-//         }
-//     }
-//     // renderUI();
-// }
+function searching(){
+    let empList = document.getElementById("emp_list");
+    var listItem = Array.from(empList.children)
+
+    var new_list = [];
+    let searchVal = document.getElementById("search_Inp").value
+    if(searchVal.length<2){
+        alert("please enter minimum two characters")
+        addInList();
+        // listItem.forEach(function(item){
+        //     empList.appendChild(item);
+        // })
+    }
+    else{
+        for(let i=0;i<listItem.length;i++){
+            let k=0;
+            for(let j=0;j<listItem[i].textContent.length;j++){
+                if(searchVal[k] === listItem[i].textContent[j]){
+                    k++;
+                    if(k>=searchVal.length){
+                        new_list.push(listItem[i])
+                        break;
+                    }
+                }
+                else{
+                    break;
+                }
+            }
+        }
+        if(new_list !== null){
+            empList.innerHTML = "";
+            new_list.forEach(function(item){
+                empList.appendChild(item);
+            })
+        }
+        else{
+            alert("No such employee found")
+        }
+    }
+}
+
+function ascendingSort(){
+    document.querySelectorAll('.sortbtn').forEach(function(btn){
+        btn.style.backgroundColor = 'initial'
+    })
+
+    let empList = document.getElementById("emp_list")
+
+    var listItems = Array.from(empList.children)
+
+    listItems.sort(function(a,b){
+        return a.textContent.localeCompare(b.textContent);
+    });
+
+    empList.innerHTML = "";
+
+    listItems.forEach(function(item){
+        empList.appendChild(item)
+    })
+}
+
+function decendingSort(){
+    document.querySelectorAll('.sortbtn').forEach(function(btn){
+        btn.style.backgroundColor = 'initial'
+    })
+
+    let empList = document.getElementById("emp_list")
+
+    var listItems = Array.from(empList.children)
+
+    listItems.sort(function(a,b){
+        return b.textContent.localeCompare(a.textContent);
+    });
+
+    empList.innerHTML = "";
+
+    listItems.forEach(function(item){
+        empList.appendChild(item)
+    })
+}
