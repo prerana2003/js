@@ -4,44 +4,6 @@ let filterobj = {}
 let empNameArr = [];
 
 
-let num = 1;
-const addEmp = (empObj) =>{
-    if(empObj.name === undefined){
-        alert("please enter information")
-    }
-    else{
-        let Emp_id = "Emp" + num;
-        employees[Emp_id] = {
-            ID: Emp_id,
-            Name: empObj.name,
-            Salary: empObj.salary,
-            Designation: empObj.designation,
-            Department_ID: empObj.deptid
-        }
-        num++;
-        let list = document.getElementById("emp_list")
-        const listItem = document.createElement("li")
-        listItem.textContent= employees[Emp_id].Name
-        list.appendChild(listItem)
-        empObj.name = undefined
-    }
-    
-    openForm();
-}
-
-console.log(employees)
-
-function addInList(){
-    let list = document.getElementById("emp_list")
-    for(let x in employees){
-        if(employees.hasOwnProperty(x)){
-            const listItem = document.createElement("li")
-            listItem.textContent= employees[x].Name
-            list.appendChild(listItem)
-        }
-    }
-}
-
 
 const renderUI = () =>{
     let main = document.getElementById("root")
@@ -78,11 +40,11 @@ const renderUI = () =>{
     sidebardiv.setAttribute("id","side_bar_div")
     contentdiv.appendChild(sidebardiv)
 
+    // ------------search & filter-------------------
     let searchFilterDiv = document.createElement("div")
     searchFilterDiv.setAttribute("id","search_filter_div")
     sidebardiv.appendChild(searchFilterDiv)
 
-    // ------------searchByName-------------------
     let searchdiv = document.createElement("div")
     searchdiv.setAttribute("id","search_div")
     searchFilterDiv.appendChild(searchdiv)
@@ -130,13 +92,21 @@ const renderUI = () =>{
     let hrline = document.createElement("hr")
     sidebardiv.appendChild(hrline)
 
+    // -------------employee list---------------
+    let emplistdiv = document.createElement("div")
+    emplistdiv.setAttribute("id","emp_list_div")
+    sidebardiv.appendChild(emplistdiv)
+
     let list = document.createElement("ul")
     list.setAttribute("id","emp_list")
-    sidebardiv.appendChild(list)
+    emplistdiv.appendChild(list)
 
     let maincontentdiv = document.createElement("div")
     maincontentdiv.setAttribute("id","main_content_div")
     contentdiv.appendChild(maincontentdiv)
+
+    createTable();
+
 
     let foot = document.createElement("footer")
     main.appendChild(foot)
@@ -270,15 +240,179 @@ const openForm = () =>{
     sub_res_div.appendChild(resetBtn)
 
     let cancelBtn = document.createElement("button")
+    cancelBtn.setAttribute("type","button")
     cancelBtn.setAttribute("id","cancel_btn")
     cancelBtn.textContent = "Cancel"
+    cancelBtn.setAttribute("onclick","cancelform()")
     cancelBtn.addEventListener('click', function(){
-        main.innerHTML= "";
+        document.getElementById("form_div").remove()
+        createTable();
     });
     addEmpForm.appendChild(cancelBtn)
 }
 
+function createTable(){
+    let main = document.getElementById("main_content_div")
 
+    let tableTitle = document.createElement("h2")
+    tableTitle.textContent = "My Table"
+    main.appendChild(tableTitle)
+
+    let tbldiv = document.createElement("div")
+    tbldiv.setAttribute("id","tblDiv")
+    main.appendChild(tbldiv)
+
+    let tbl = document.createElement("table")
+    tbl.setAttribute("id","table")
+    tbl.setAttribute("border", "1")
+    tbldiv.appendChild(tbl)
+
+    let tblhead = document.createElement("thead")
+    tbl.appendChild(tblhead)
+
+    let tblheadrow = document.createElement("tr")
+    tblhead.appendChild(tblheadrow)
+
+    var theadcell1 = document.createElement("td")
+    tblhead.appendChild(theadcell1)
+    var theadcelltext1 = document.createTextNode("Sr.No")
+    theadcell1.appendChild(theadcelltext1)
+
+    var theadcell2 = document.createElement("td")
+    tblhead.appendChild(theadcell2)
+    var theadcelltext2 = document.createTextNode("alphabet")
+    theadcell2.appendChild(theadcelltext2)
+
+    let tblbody = document.createElement("tbody")
+    tblbody.setAttribute("id","tbl_body")
+    tbl.appendChild(tblbody)
+
+    let paginationDiv = document.createElement("div")
+    paginationDiv.setAttribute("id","pagination_div")
+    main.appendChild(paginationDiv)
+
+    var dropdown = document.createElement("SELECT");
+    dropdown.setAttribute("id", "mySelect");
+    dropdown.addEventListener('change', function(){
+        obj.itemsPerPage = parseInt(this.value,10)
+        // alert(obj.itemsPerPage)
+    })
+    main.appendChild(dropdown);
+
+    var ddopt1 = document.createElement("option");
+    var ddopt1text = document.createTextNode("3");
+    ddopt1.appendChild(ddopt1text);
+    document.getElementById("mySelect").appendChild(ddopt1);
+
+    var ddopt2 = document.createElement("option");
+    var ddopt2text = document.createTextNode("4");
+    ddopt2.appendChild(ddopt2text);
+    document.getElementById("mySelect").appendChild(ddopt2);
+    
+    var ddopt3 = document.createElement("option");
+    var ddopt3text = document.createTextNode("5");
+    ddopt3.appendChild(ddopt3text);
+    document.getElementById("mySelect").appendChild(ddopt3);
+
+    init();
+}
+
+
+let obj = {
+    arr : ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"],
+    itemsPerPage : 5,
+    currentPage: 1
+}
+
+function displayArray(){
+    // alert(obj.itemsPerPage)
+    let startIndex = (obj.currentPage -1)*obj.itemsPerPage;
+    let endIndex = startIndex + obj.itemsPerPage;
+    let pageAlphabets = obj.arr.slice(startIndex,endIndex)
+
+    let tblbody = document.querySelector("#tbl_body");
+    tblbody.innerHTML = '';
+
+    pageAlphabets.forEach((alphabet, index) => {
+        const row = `<tr>
+                    <td>${startIndex + index + 1}</td>
+                    <td>${alphabet}</td>
+                    </tr>`;
+        tblbody.innerHTML += row
+    })
+}
+
+function createPaginationLinks(){
+    
+
+    let totalPages = Math.ceil(obj.arr.length / obj.itemsPerPage);
+    let paginationDiv = document.querySelector("#pagination_div");
+    paginationDiv.innerHTML = '';
+
+    for(let i=1;i<=totalPages;i++){
+        const link = document.createElement("a");
+        link.href = "#";
+        link.textContent = i;
+
+        link.addEventListener('click', () => {
+            obj.currentPage = i;
+            displayArray();
+        })
+        paginationDiv.appendChild(link);
+    }
+}
+
+// function updateitemsperPage(value){
+//     obj.itemsPerPage = parseInt(value,10)
+//     alert(obj.itemsPerPage)
+// }
+
+function init(){
+    // updateitemsperPage(value);
+    displayArray();
+    createPaginationLinks();
+}
+
+
+
+
+let num = 1;
+const addEmp = (empObj) =>{
+    if(empObj.name === undefined){
+        alert("please enter information")
+    }
+    else{
+        let Emp_id = "Emp" + num;
+        employees[Emp_id] = {
+            ID: Emp_id,
+            Name: empObj.name,
+            Salary: empObj.salary,
+            Designation: empObj.designation,
+            Department_ID: empObj.deptid
+        }
+        num++;
+        let list = document.getElementById("emp_list")
+        const listItem = document.createElement("li")
+        listItem.textContent= employees[Emp_id].Name
+        list.appendChild(listItem)
+        empObj.name = undefined
+    }
+    
+    openForm();
+}
+
+console.log(employees)
+
+function addInList(){
+    let list = document.getElementById("emp_list")
+    for(let x in employees){
+        if(employees.hasOwnProperty(x)){
+            const listItem = document.createElement("li")
+            listItem.textContent= employees[x].Name
+            list.appendChild(listItem)
+        }
+    }
+}
 
 function searching(){
     let empList = document.getElementById("emp_list");
@@ -286,12 +420,19 @@ function searching(){
 
     var new_list = [];
     let searchVal = document.getElementById("search_Inp").value
-    if(searchVal.length<2){
+
+    if(searchVal.length<2 && new_list !== null){
+        empList.innerHTML = ""
         alert("please enter minimum two characters")
         addInList();
-        // listItem.forEach(function(item){
-        //     empList.appendChild(item);
-        // })
+    }
+    else if(searchVal.length<2){
+        alert("please enter minimum two characters")
+    }
+    else if(searchVal.length>2 && new_list === null){
+        alert("No employee found")
+        empList.innerHTML = ""
+        addInList();
     }
     else{
         for(let i=0;i<listItem.length;i++){
@@ -314,9 +455,10 @@ function searching(){
             new_list.forEach(function(item){
                 empList.appendChild(item);
             })
+            new_list = [];
         }
         else{
-            alert("No such employee found")
+            alert("employee not found")
         }
     }
 }

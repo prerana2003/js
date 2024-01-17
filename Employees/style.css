@@ -42,11 +42,35 @@ header{
 #side_bar_div{
     width: 27%;
     height: 100%;
+}
+
+#search_div{
+    background-color: rgb(230, 225, 219);
     padding: 5px;
+    border-radius: 8px;
+}
+
+#search_Inp{
+    background-color: transparent;
+    border: none;
+    font-style: italic;
+    font-weight: bold;
+}
+
+#search_Inp:focus{
+    outline: none;
+}
+
+#search_btn{
+    border: none;
+    background-color: transparent;
 }
 
 #search_filter_div{
     display: flex;
+    margin: 5px;
+    margin-left: 10px;
+    align-items: center;
 }
 
 #search_filter_div div{
@@ -54,7 +78,12 @@ header{
 }
 
 #asc_btn{
-    margin-right: 1px;
+    margin-right: 2px;
+}
+
+#emp_list_div{
+    overflow-y: scroll; 
+    height:90%;
 }
 
 #side_bar_div ul{
@@ -86,10 +115,41 @@ header{
     margin-top: 6px;
     background-color:rgb(191, 201, 201);
     width: 100%;
+    
     height: 100%;
     text-align: center;
     align-content: center;
     border-radius: 10px;
+}
+
+#tblDiv{
+    height: 50%;
+}
+
+#table{
+    margin: auto;
+    text-align: center;
+}
+
+#table thead{
+    background-color: rgb(3, 216, 216);
+}
+
+#table td{
+    width: 100px;
+}
+
+#pagination_div a{
+    text-decoration: none;
+    margin: 5px;
+    color: black;
+    border: 1px solid black;
+    padding: 5px;
+}
+
+#pagination_div a.active{
+    background-color: navy;
+    color: white;
 }
 
 #form_div{
