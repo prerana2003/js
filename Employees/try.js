@@ -2,7 +2,7 @@ let employees = {}
 let empObj = {};
 let filterobj = {}
 let empNameArr = [];
-let arr = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
+
 
 
 const renderUI = () =>{
@@ -104,6 +104,9 @@ const renderUI = () =>{
     let maincontentdiv = document.createElement("div")
     maincontentdiv.setAttribute("id","main_content_div")
     contentdiv.appendChild(maincontentdiv)
+
+    createTable();
+
 
     let foot = document.createElement("footer")
     main.appendChild(foot)
@@ -237,14 +240,159 @@ const openForm = () =>{
     sub_res_div.appendChild(resetBtn)
 
     let cancelBtn = document.createElement("button")
+    cancelBtn.setAttribute("type","button")
     cancelBtn.setAttribute("id","cancel_btn")
     cancelBtn.textContent = "Cancel"
+    cancelBtn.setAttribute("onclick","cancelform()")
     cancelBtn.addEventListener('click', function(){
-        main.innerHTML= "";
+        document.getElementById("form_div").remove()
+        createTable();
     });
     addEmpForm.appendChild(cancelBtn)
 }
 
+// ---------------------------Pagination-----------------------------------------
+
+let obj = {
+    arr : ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"],
+    itemsPerPage : 3,
+    currentPage: 1,
+    prevItemsPerPage: 3
+}
+
+function createTable(){
+    let main = document.getElementById("main_content_div")
+
+    let tableTitle = document.createElement("h2")
+    tableTitle.textContent = "My Table"
+    main.appendChild(tableTitle)
+
+    let tbldiv = document.createElement("div")
+    tbldiv.setAttribute("id","tblDiv")
+    main.appendChild(tbldiv)
+
+    let tbl = document.createElement("table")
+    tbl.setAttribute("id","table")
+    tbl.setAttribute("border", "1")
+    tbldiv.appendChild(tbl)
+
+    let tblhead = document.createElement("thead")
+    tbl.appendChild(tblhead)
+
+    let tblheadrow = document.createElement("tr")
+    tblhead.appendChild(tblheadrow)
+
+    var theadcell1 = document.createElement("td")
+    tblhead.appendChild(theadcell1)
+    var theadcelltext1 = document.createTextNode("Sr No")
+    theadcell1.appendChild(theadcelltext1)
+
+    var theadcell2 = document.createElement("td")
+    tblhead.appendChild(theadcell2)
+    var theadcelltext2 = document.createTextNode("Alphabet")
+    theadcell2.appendChild(theadcelltext2)
+
+    let tblbody = document.createElement("tbody")
+    tblbody.setAttribute("id","tbl_body")
+    tbl.appendChild(tblbody)
+
+    let mainpaginationdiv = document.createElement("div")
+    mainpaginationdiv.setAttribute("id","main_pagination_div")
+    main.appendChild(mainpaginationdiv)
+
+    var dropdownlbl = document.createElement("label")
+    dropdownlbl.setAttribute("id", "drop_down_lbl")
+    dropdownlbl.textContent = "Items Per Page: "
+    mainpaginationdiv.appendChild(dropdownlbl)
+
+    var dropdown = document.createElement("SELECT");
+    dropdown.setAttribute("id", "mySelect");
+    dropdown.addEventListener('change', function(){
+        obj.prevItemsPerPage = obj.itemsPerPage
+        obj.itemsPerPage = parseInt(this.value,10)
+        updatepagination();
+    })
+    mainpaginationdiv.appendChild(dropdown);
+
+    var ddopt1 = document.createElement("option");
+    var ddopt1text = document.createTextNode("3");
+    ddopt1.appendChild(ddopt1text);
+    document.getElementById("mySelect").appendChild(ddopt1);
+
+    var ddopt2 = document.createElement("option");
+    var ddopt2text = document.createTextNode("4");
+    ddopt2.appendChild(ddopt2text);
+    document.getElementById("mySelect").appendChild(ddopt2);
+    
+    var ddopt3 = document.createElement("option");
+    var ddopt3text = document.createTextNode("5");
+    ddopt3.appendChild(ddopt3text);
+    document.getElementById("mySelect").appendChild(ddopt3);
+
+    const displayrecordsbypages = document.createElement("h4")
+    displayrecordsbypages.setAttribute("id","display_records_by_pages")
+    mainpaginationdiv.appendChild(displayrecordsbypages)
+
+    let prevbtn = document.createElement("button")
+    prevbtn.setAttribute("id","prev_btn")
+    prevbtn.setAttribute("type", "button")
+    prevbtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>'
+    prevbtn.addEventListener('click', function(){
+        obj.currentPage = Math.max(1, obj.currentPage - 1);
+        displayArray();
+    })
+    mainpaginationdiv.appendChild(prevbtn)
+    
+    let nextbtn = document.createElement("button")
+    nextbtn.setAttribute("id","next_btn")
+    nextbtn.setAttribute("type", "button")
+    nextbtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>'
+    nextbtn.addEventListener('click', function(){
+        obj.currentPage += 1;
+        displayArray();
+    })
+    mainpaginationdiv.appendChild(nextbtn)
+
+    displayArray();
+}
+
+function displayArray(){
+    let startIndex = Math.min((obj.currentPage - 1)*obj.itemsPerPage, obj.arr.length-1);
+    let endIndex = Math.min(startIndex + obj.itemsPerPage, obj.arr.length);
+    let pageAlphabets = obj.arr.slice(startIndex,endIndex)
+    let totalPages = Math.ceil(obj.arr.length / obj.itemsPerPage);
+    obj.totalPages = totalPages;
+
+    let tblbody = document.querySelector("#tbl_body");
+    tblbody.innerHTML = '';
+
+    pageAlphabets.forEach((alphabet, index) => {
+        const row = `<tr>
+                    <td>${startIndex + index + 1}</td>
+                    <td>${alphabet}</td>
+                    </tr>`;
+        tblbody.innerHTML += row
+    })
+
+    let nextbtn = document.getElementById("next_btn")
+    let prevbtn = document.getElementById("prev_btn")
+
+    prevbtn.disabled = obj.currentPage === 1;
+    nextbtn.disabled = obj.currentPage * obj.itemsPerPage >= obj.arr.length;
+
+    let displayrecordsbypages = document.querySelector("#display_records_by_pages")
+    displayrecordsbypages.innerHTML = '';
+    displayrecordsbypages.innerHTML = (startIndex + 1) + " - " + endIndex + " to " + obj.arr.length
+}
+
+function updatepagination(){
+    let visibleItemIndex = ((obj.currentPage - 1) * obj.prevItemsPerPage) + 1;
+    obj.currentPage = Math.ceil(visibleItemIndex / obj.itemsPerPage);
+    displayArray();
+}
+
+
+// -------------------------Add Employee-------------------------------------
 
 let num = 1;
 const addEmp = (empObj) =>{
@@ -261,10 +409,7 @@ const addEmp = (empObj) =>{
             Department_ID: empObj.deptid
         }
         num++;
-        let list = document.getElementById("emp_list")
-        const listItem = document.createElement("li")
-        listItem.textContent= employees[Emp_id].Name
-        list.appendChild(listItem)
+        addInList();
         empObj.name = undefined
     }
     
@@ -275,6 +420,7 @@ console.log(employees)
 
 function addInList(){
     let list = document.getElementById("emp_list")
+    list.innerHTML = ''
     for(let x in employees){
         if(employees.hasOwnProperty(x)){
             const listItem = document.createElement("li")
@@ -283,6 +429,8 @@ function addInList(){
         }
     }
 }
+
+// ---------------------------------Searching--------------------------------
 
 function searching(){
     let empList = document.getElementById("emp_list");
@@ -332,6 +480,8 @@ function searching(){
         }
     }
 }
+
+// --------------------------------Sorting------------------------------------
 
 function ascendingSort(){
     document.querySelectorAll('.sortbtn').forEach(function(btn){

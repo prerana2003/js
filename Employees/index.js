@@ -251,6 +251,15 @@ const openForm = () =>{
     addEmpForm.appendChild(cancelBtn)
 }
 
+// ---------------------------Pagination-----------------------------------------
+
+let obj = {
+    arr : ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"],
+    itemsPerPage : 3,
+    currentPage: 1,
+    prevItemsPerPage: 3
+}
+
 function createTable(){
     let main = document.getElementById("main_content_div")
 
@@ -275,29 +284,35 @@ function createTable(){
 
     var theadcell1 = document.createElement("td")
     tblhead.appendChild(theadcell1)
-    var theadcelltext1 = document.createTextNode("Sr.No")
+    var theadcelltext1 = document.createTextNode("Sr No")
     theadcell1.appendChild(theadcelltext1)
 
     var theadcell2 = document.createElement("td")
     tblhead.appendChild(theadcell2)
-    var theadcelltext2 = document.createTextNode("alphabet")
+    var theadcelltext2 = document.createTextNode("Alphabet")
     theadcell2.appendChild(theadcelltext2)
 
     let tblbody = document.createElement("tbody")
     tblbody.setAttribute("id","tbl_body")
     tbl.appendChild(tblbody)
 
-    let paginationDiv = document.createElement("div")
-    paginationDiv.setAttribute("id","pagination_div")
-    main.appendChild(paginationDiv)
+    let mainpaginationdiv = document.createElement("div")
+    mainpaginationdiv.setAttribute("id","main_pagination_div")
+    main.appendChild(mainpaginationdiv)
+
+    var dropdownlbl = document.createElement("label")
+    dropdownlbl.setAttribute("id", "drop_down_lbl")
+    dropdownlbl.textContent = "Items Per Page: "
+    mainpaginationdiv.appendChild(dropdownlbl)
 
     var dropdown = document.createElement("SELECT");
     dropdown.setAttribute("id", "mySelect");
     dropdown.addEventListener('change', function(){
+        obj.prevItemsPerPage = obj.itemsPerPage
         obj.itemsPerPage = parseInt(this.value,10)
-        // alert(obj.itemsPerPage)
+        updatepagination();
     })
-    main.appendChild(dropdown);
+    mainpaginationdiv.appendChild(dropdown);
 
     var ddopt1 = document.createElement("option");
     var ddopt1text = document.createTextNode("3");
@@ -314,21 +329,39 @@ function createTable(){
     ddopt3.appendChild(ddopt3text);
     document.getElementById("mySelect").appendChild(ddopt3);
 
-    init();
-}
+    const displayrecordsbypages = document.createElement("h4")
+    displayrecordsbypages.setAttribute("id","display_records_by_pages")
+    mainpaginationdiv.appendChild(displayrecordsbypages)
 
+    let prevbtn = document.createElement("button")
+    prevbtn.setAttribute("id","prev_btn")
+    prevbtn.setAttribute("type", "button")
+    prevbtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>'
+    prevbtn.addEventListener('click', function(){
+        obj.currentPage = Math.max(1, obj.currentPage - 1);
+        displayArray();
+    })
+    mainpaginationdiv.appendChild(prevbtn)
+    
+    let nextbtn = document.createElement("button")
+    nextbtn.setAttribute("id","next_btn")
+    nextbtn.setAttribute("type", "button")
+    nextbtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>'
+    nextbtn.addEventListener('click', function(){
+        obj.currentPage += 1;
+        displayArray();
+    })
+    mainpaginationdiv.appendChild(nextbtn)
 
-let obj = {
-    arr : ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"],
-    itemsPerPage : 5,
-    currentPage: 1
+    displayArray();
 }
 
 function displayArray(){
-    // alert(obj.itemsPerPage)
-    let startIndex = (obj.currentPage -1)*obj.itemsPerPage;
-    let endIndex = startIndex + obj.itemsPerPage;
+    let startIndex = Math.min((obj.currentPage - 1)*obj.itemsPerPage, obj.arr.length-1);
+    let endIndex = Math.min(startIndex + obj.itemsPerPage, obj.arr.length);
     let pageAlphabets = obj.arr.slice(startIndex,endIndex)
+    let totalPages = Math.ceil(obj.arr.length / obj.itemsPerPage);
+    obj.totalPages = totalPages;
 
     let tblbody = document.querySelector("#tbl_body");
     tblbody.innerHTML = '';
@@ -340,41 +373,26 @@ function displayArray(){
                     </tr>`;
         tblbody.innerHTML += row
     })
+
+    let nextbtn = document.getElementById("next_btn")
+    let prevbtn = document.getElementById("prev_btn")
+
+    prevbtn.disabled = obj.currentPage === 1;
+    nextbtn.disabled = obj.currentPage * obj.itemsPerPage >= obj.arr.length;
+
+    let displayrecordsbypages = document.querySelector("#display_records_by_pages")
+    displayrecordsbypages.innerHTML = '';
+    displayrecordsbypages.innerHTML = (startIndex + 1) + " - " + endIndex + " to " + obj.arr.length
 }
 
-function createPaginationLinks(){
-    
-
-    let totalPages = Math.ceil(obj.arr.length / obj.itemsPerPage);
-    let paginationDiv = document.querySelector("#pagination_div");
-    paginationDiv.innerHTML = '';
-
-    for(let i=1;i<=totalPages;i++){
-        const link = document.createElement("a");
-        link.href = "#";
-        link.textContent = i;
-
-        link.addEventListener('click', () => {
-            obj.currentPage = i;
-            displayArray();
-        })
-        paginationDiv.appendChild(link);
-    }
-}
-
-// function updateitemsperPage(value){
-//     obj.itemsPerPage = parseInt(value,10)
-//     alert(obj.itemsPerPage)
-// }
-
-function init(){
-    // updateitemsperPage(value);
+function updatepagination(){
+    let visibleItemIndex = ((obj.currentPage - 1) * obj.prevItemsPerPage) + 1;
+    obj.currentPage = Math.ceil(visibleItemIndex / obj.itemsPerPage);
     displayArray();
-    createPaginationLinks();
 }
 
 
-
+// -------------------------Add Employee-------------------------------------
 
 let num = 1;
 const addEmp = (empObj) =>{
@@ -391,10 +409,7 @@ const addEmp = (empObj) =>{
             Department_ID: empObj.deptid
         }
         num++;
-        let list = document.getElementById("emp_list")
-        const listItem = document.createElement("li")
-        listItem.textContent= employees[Emp_id].Name
-        list.appendChild(listItem)
+        addInList();
         empObj.name = undefined
     }
     
@@ -405,6 +420,7 @@ console.log(employees)
 
 function addInList(){
     let list = document.getElementById("emp_list")
+    list.innerHTML = ''
     for(let x in employees){
         if(employees.hasOwnProperty(x)){
             const listItem = document.createElement("li")
@@ -413,6 +429,8 @@ function addInList(){
         }
     }
 }
+
+// ---------------------------------Searching--------------------------------
 
 function searching(){
     let empList = document.getElementById("emp_list");
@@ -462,6 +480,8 @@ function searching(){
         }
     }
 }
+
+// --------------------------------Sorting------------------------------------
 
 function ascendingSort(){
     document.querySelectorAll('.sortbtn').forEach(function(btn){
