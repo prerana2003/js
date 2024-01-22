@@ -1,4 +1,4 @@
-const arr = ["l","d","a","e","i","h","k","s","p"]
+const arr = ["l","d","a","e","i","h","k","s","p","A"] //
 
 const sortCharacterArray = (arr) =>{
     for(let i=0;i<arr.length;i++){

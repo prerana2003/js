@@ -113,7 +113,7 @@ header{
 }
 
 #listItem_name{
-    width: 90%;
+    width: 100%;
 }
 
 #menu_btn{
@@ -151,7 +151,10 @@ header{
 }
 .dropdown-content a:hover {background-color: #ddd;}
   
-.show {display:block;}
+.show {
+    /* margin-top: 50px; */
+    display:block;
+}
 
 #main_content_div{
     margin-top: 6px;

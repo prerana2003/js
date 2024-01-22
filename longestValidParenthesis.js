@@ -2,6 +2,7 @@ str = ")()())((()))((((())))";
 
 const longestValidParenthesis = (str) =>{
     let length = 0;
+    let resstr;
     let count = 0;
     let i=0;
 
@@ -23,6 +24,7 @@ const longestValidParenthesis = (str) =>{
                 tempstr = str.slice(i,j+1);
                 templength += tempstr.length;
                 if(templength>length){
+                    resstr = tempstr
                     length = templength;
                 }
                 i=j+1;
@@ -30,7 +32,7 @@ const longestValidParenthesis = (str) =>{
         }
     }
 
-    return length;
+    return [resstr, length];
 }
 
 console.log(longestValidParenthesis(str))

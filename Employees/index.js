@@ -1,6 +1,6 @@
 // renderUI
 // searching
-//sorting
+// sorting
 // openForm
 //-----Pagination------
 //createTable
@@ -41,11 +41,16 @@ function addInList(employees){
     for(let x in employees){
         if(employees.hasOwnProperty(x)){
             const listItem = document.createElement("li")
+            listItem.id = x
             let namelbl = document.createElement("label")
+            namelbl.setAttribute("type","lable")
             namelbl.setAttribute("id","listItem_name")
             namelbl.textContent= employees[x].Name
+            listItem.addEventListener("mouseover", function(){
+                deleteobj.id = this.id
+            })
             listItem.appendChild(namelbl)
-
+            
             // --------------dropdown-------------------
 
             let dropDownDiv = document.createElement("div")
@@ -67,17 +72,19 @@ function addInList(employees){
 
             let deleteLink = document.createElement("a")
             deleteLink.setAttribute("href","#")
-            deleteLink.textContent = "Delete"
+            deleteLink.addEventListener('click',deleteemp)
+            deleteLink.innerHTML = "Delete"
             content_div.appendChild(deleteLink)
 
             let updateLink = document.createElement("a")
             updateLink.setAttribute("href","#")
-            updateLink.textContent = "Update"
+            updateLink.addEventListener('click',updateemp)
+            updateLink.innerHTML = "Update"
             content_div.appendChild(updateLink)
 
             let displayLink = document.createElement("a")
             displayLink.setAttribute("href","#")
-            displayLink.textContent = "Display"
+            displayLink.innerHTML = "Display"
             content_div.appendChild(displayLink)
 
             list.appendChild(listItem)
@@ -171,6 +178,27 @@ function sorting(clicked_ID){
     for(let x in listItems){
         sorted_emp_list[x] = listItems[x]
         addInList(sorted_emp_list)
+    }
+}
+
+let obj_ID = {}
+
+function deleteemp(){
+    for(let x in employees){
+        if(x === obj_ID.id){
+            delete employees[x];
+            addInList(employees);
+            break;
+        }
+    }
+}
+
+function updateemp(){
+    openForm();
+    for(let x in employees){
+        if(x === obj_ID.id){
+            
+        }
     }
 }
 
