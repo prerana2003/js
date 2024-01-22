@@ -3,8 +3,6 @@ let empObj = {};
 let filterobj = {}
 let empNameArr = [];
 
-
-
 const renderUI = () =>{
     let main = document.getElementById("root")
     main.innerHTML=""
@@ -167,7 +165,7 @@ const openForm = () =>{
     inpSalaryDiv.appendChild(entSalary)
 
     let inpSalary = document.createElement("input")
-    inpSalary.setAttribute("type","text")
+    inpSalary.setAttribute("type","number")
     inpSalary.setAttribute("placeholder","Enter Salary")
     inpSalary.setAttribute("id","inp_Salary")
     inpSalary.addEventListener('click',function(event){
@@ -424,11 +422,22 @@ function addInList(){
     for(let x in employees){
         if(employees.hasOwnProperty(x)){
             const listItem = document.createElement("li")
-            listItem.textContent= employees[x].Name
+
+            let namelbl = document.createElement("label")
+            namelbl.setAttribute("id","listItem_name")
+            namelbl.textContent= employees[x].Name
+            listItem.appendChild(namelbl)
+
+            let menubtn = document.createElement("button")
+            menubtn.setAttribute("id","menu_btn")
+            menubtn.innerHTML = '<i class="fa-solid fa-ellipsis-vertical"></i>'
+            listItem.appendChild(menubtn)
             list.appendChild(listItem)
         }
     }
 }
+
+
 
 // ---------------------------------Searching--------------------------------
 
@@ -468,7 +477,7 @@ function searching(){
                 }
             }
         }
-        if(new_list !== null){
+        if(new_list !== undefined){
             empList.innerHTML = "";
             new_list.forEach(function(item){
                 empList.appendChild(item);
@@ -477,10 +486,13 @@ function searching(){
         }
         else{
             alert("employee not found")
+            addInList();
         }
+        
     }
 }
 
+// if(j === listItem[i].textContent.length-1)
 // --------------------------------Sorting------------------------------------
 
 function ascendingSort(){

@@ -1,4 +1,4 @@
-str = ")()())((()))((";
+str = ")()())((()))((((())))";
 
 const longestValidParenthesis = (str) =>{
     let length = 0;
