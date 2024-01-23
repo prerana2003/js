@@ -56,7 +56,7 @@ const subArray = (arr, k) =>{
         }
     }
 
-    return countSubArrays;
+    return [countSubArrays,subArrays];
 }
 
 console.log(subArray(arr, k))

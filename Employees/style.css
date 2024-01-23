@@ -15,6 +15,32 @@ header{
     margin-top: 5px; 
 }
 
+#update_att_div{
+    display: table-row-group;
+}
+
+#update_att_div #lbldiv{
+    display: table-cell;
+    margin: 5px;
+    text-align: left;
+}
+
+#update_att_div #inp{
+    margin: 10px;
+}
+
+#Update_btn{
+    background-color: rgb(38, 223, 38);
+    border-color: darkgreen;
+}
+
+#Update_btn:hover{
+    background-color: rgb(109, 224, 109) ;
+    border-width: 2px;
+    border-color: darkgreen;
+}
+
+
 #add_emp_btn{
     margin: auto;
     margin-top: 20px;
@@ -93,6 +119,8 @@ header{
 
 #side_bar_div ul li{
     display: flex;
+    justify-content: space-between;
+    min-width: 100px;
     background-color: darkcyan;
     margin: 3px;
     margin-left: -30px;
@@ -112,12 +140,8 @@ header{
     border: 2px solid darkcyan;
 }
 
-#listItem_name{
-    width: 100%;
-}
-
 #menu_btn{
-    margin-left: 70px;
+    padding: 0px 10px 0px 10px;
     background-color: transparent;
     border: none;
     cursor: pointer;
@@ -130,9 +154,9 @@ header{
 }
 
 .dropdown {
-    position: relative;
-    display: inline-block;
-  }
+    display: flex;
+    flex-wrap:inherit;
+}
   
 .dropdown-content {
     display: none;
@@ -142,6 +166,7 @@ header{
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
 }
+
 .dropdown-content a {
     color: black;
     padding: 12px 16px;
@@ -152,15 +177,16 @@ header{
 .dropdown-content a:hover {background-color: #ddd;}
   
 .show {
-    /* margin-top: 50px; */
-    display:block;
+    display: inline-block;
+    position:absolute;
 }
 
 #main_content_div{
     margin-top: 6px;
     background-color:rgb(191, 201, 201);
     width: 100%;
-    height: 100%;
+    min-height: 100%;
+    max-height: fit-content;
     text-align: center;
     align-content: center;
     border-radius: 10px;
@@ -264,13 +290,20 @@ header{
     margin: 10px;
 }
 
-#form_div label{
+#field_div{
+    display: table-row-group;
+}
+
+#field_div label{
+    display: table-cell;
+    text-align: left;
     font-weight: bold;
     font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-#form_div input{
-    padding: 5px;
+#field_div input{
+    margin: 5px;
+    height: 25px;
     border-width: 1px;
     border-radius: 3px;
 }

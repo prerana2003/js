@@ -12,28 +12,101 @@ let employees = {}
 
 let empObj = {};
 let num = 1;
+
 const addEmp = () =>{
-    if(empObj.name === undefined){
+    let Emp_id = "Emp" + num;
+    if(empObj.Name === undefined){
         alert("please enter information")
     }
     else{
-        let Emp_id = "Emp" + num;
         employees[Emp_id] = {
-            ID: Emp_id,
-            Name: empObj.name,
-            Salary: empObj.salary,
-            Designation: empObj.designation,
-            Department_ID: empObj.deptid
+            "ID": Emp_id,
+            "Name": empObj["Name"],
+            "Salary": empObj["Salary"],
+            "Designation": empObj["Designation"],
+            "Department ID": empObj["Department ID"]
         }
         num++;
         addInList(employees);
-        empObj.name = undefined
+        empObj = {}
     }
-    
+    console.log(employees)
     openForm();
 }
 
-console.log(employees)
+let obj_ID = {}
+
+function deleteemp(){
+    console.log()
+    for(let x in employees){
+        if(x === obj_ID.id){
+            delete employees[x];
+            addInList(employees);
+            break;
+        }
+    }
+}
+
+function updateForm(){
+    openForm();
+
+    document.getElementById("title_of_form").textContent = "Update Employee";
+
+    let formdiv = document.getElementById("addEmpFormDiv")
+    formdiv.innerHTML = "";
+
+    for(let x in employees){
+        if(x === obj_ID.id){
+            for(let y in employees[x]){
+                let div = document.createElement("div")
+                div.setAttribute("id","update_att_div")
+                formdiv.appendChild(div)
+
+                let lbl = document.createElement("label")
+                lbl.setAttribute("id","lbldiv")
+                lbl.innerHTML = y +" :"
+                div.appendChild(lbl)
+
+                let inp = document.createElement("input")
+                inp.setAttribute("type","text")
+                inp.setAttribute("id","inp")
+                inp.value = employees[x][y]
+                inp.addEventListener('input',function(event){
+                    empObj[y] = event.target.value
+                })
+                div.appendChild(inp)
+                if(y === "ID"){
+                    inp.setAttribute("disabled","true")
+                }
+            }
+        }
+    }
+    let submit_btn = document.getElementById("submit_btn")
+    submit_btn.textContent = "Update"
+    submit_btn.setAttribute("onclick","updateEmp()")
+}
+
+function updateEmp(){
+    for(let x in employees){
+        if(x === obj_ID.id){
+            if(obj_ID.id in employees){
+                employees[obj_ID.id] = {...employees[obj_ID.id],...empObj}
+                alert("Employee information is successfully updated")
+                addInList(employees);
+                break;
+            }
+            alert("No such employee found. Please check employee ID.")
+            break;
+        }
+    }
+    displayEmp();
+}
+
+function displayEmp(){
+    let main = document.getElementById("main_content_div")
+    main.innerHTML= "";
+    createTable();
+}
 
 function addInList(employees){
     let list = document.getElementById("emp_list")
@@ -46,8 +119,8 @@ function addInList(employees){
             namelbl.setAttribute("type","lable")
             namelbl.setAttribute("id","listItem_name")
             namelbl.textContent= employees[x].Name
-            listItem.addEventListener("mouseover", function(){
-                deleteobj.id = this.id
+            listItem.addEventListener("click", function(){
+                obj_ID.id = this.id
             })
             listItem.appendChild(namelbl)
             
@@ -78,7 +151,7 @@ function addInList(employees){
 
             let updateLink = document.createElement("a")
             updateLink.setAttribute("href","#")
-            updateLink.addEventListener('click',updateemp)
+            updateLink.addEventListener('click',updateForm)
             updateLink.innerHTML = "Update"
             content_div.appendChild(updateLink)
 
@@ -178,27 +251,6 @@ function sorting(clicked_ID){
     for(let x in listItems){
         sorted_emp_list[x] = listItems[x]
         addInList(sorted_emp_list)
-    }
-}
-
-let obj_ID = {}
-
-function deleteemp(){
-    for(let x in employees){
-        if(x === obj_ID.id){
-            delete employees[x];
-            addInList(employees);
-            break;
-        }
-    }
-}
-
-function updateemp(){
-    openForm();
-    for(let x in employees){
-        if(x === obj_ID.id){
-            
-        }
     }
 }
 
@@ -318,6 +370,8 @@ const renderUI = () =>{
 
 const openForm = () =>{
 
+    let formobj = ["ID","Name","Salary","Designation", "Department ID"]
+
     let main = document.getElementById("main_content_div")
     main.innerHTML= "";
 
@@ -326,6 +380,7 @@ const openForm = () =>{
     main.appendChild(formdiv)
 
     let title = document.createElement("h1")
+    title.id = "title_of_form"
     title.textContent = "Add Employee"
     formdiv.appendChild(title)
 
@@ -334,93 +389,32 @@ const openForm = () =>{
     addEmpForm.setAttribute("id","add_emp_form")
     formdiv.appendChild(addEmpForm)
 
-    let inpNameDiv = document.createElement("div")
-    inpNameDiv.setAttribute("id","inp_Name_Div")
-    addEmpForm.appendChild(inpNameDiv)
+    let addEmpFormDiv = document.createElement("div")
+    addEmpFormDiv.setAttribute("id","addEmpFormDiv")
+    addEmpForm.appendChild(addEmpFormDiv)
 
-    let entName = document.createElement("label")
-    entName.setAttribute("type","label")
-    entName.setAttribute("id","enter_name")
-    entName.textContent = "Name*: "
-    inpNameDiv.appendChild(entName)
+    for(let i=0;i<formobj.length;i++){
+        let div = document.createElement("div")
+        div.setAttribute("id","field_div")
+        addEmpFormDiv.appendChild(div)
 
-    let inpName = document.createElement("input")
-    inpName.setAttribute("type","text")
-    inpName.setAttribute("placeholder","Enter Name")
-    inpName.setAttribute("id","inp_Name")
-    inpName.addEventListener('input',function(event){
-        if(event.target.id === "inp_Name"){
-            empObj.name = event.target.value
+        if(formobj[i] === "ID"){
+            continue;
         }
-    })
-    inpNameDiv.appendChild(inpName)
 
-    let inpSalaryDiv = document.createElement("div")
-    inpSalaryDiv.setAttribute("id","inp_Salary_Div")
-    addEmpForm.appendChild(inpSalaryDiv)
+        let lbl = document.createElement("label")
+        lbl.setAttribute("id","lbldiv")
+        lbl.innerHTML = formobj[i] +" :"
+        div.appendChild(lbl)
 
-    let entSalary = document.createElement("label")
-    entSalary.setAttribute("type","label")
-    entSalary.setAttribute("id","enter_Salary")
-    entSalary.textContent = "Salary: "
-    inpSalaryDiv.appendChild(entSalary)
-
-    let inpSalary = document.createElement("input")
-    inpSalary.setAttribute("type","number")
-    inpSalary.setAttribute("placeholder","Enter Salary")
-    inpSalary.setAttribute("id","inp_Salary")
-    inpSalary.addEventListener('click',function(event){
-        if(event.target.id === "inp_Salary"){
-            empObj.salary = event.target.value
-        }
-    })
-    inpSalaryDiv.appendChild(inpSalary)
-
-    let inpDesgDiv = document.createElement("div")
-    inpDesgDiv.setAttribute("id","inp_desg_Div")
-    addEmpForm.appendChild(inpDesgDiv)
-
-    let entDesignation = document.createElement("label")
-    entDesignation.setAttribute("type","label")
-    entDesignation.setAttribute("id","enter_Designation")
-    entDesignation.textContent = "Designation: "
-    inpDesgDiv.appendChild(entDesignation)
-
-    let inpDesignation = document.createElement("input")
-    inpDesignation.setAttribute("type","text")
-    inpDesignation.setAttribute("placeholder","Enter Designation")
-    inpDesignation.setAttribute("id","inp_Designation")
-    inpDesignation.addEventListener('input',function(event){
-        if(event.target.id === "inp_Designation"){
-            empObj.designation = event.target.value
-        }
-    })
-    inpDesgDiv.appendChild(inpDesignation)
-
-    let inpDeptDiv = document.createElement("div")
-    inpDeptDiv.setAttribute("id","inp_dept_Div")
-    addEmpForm.appendChild(inpDeptDiv)
-
-    let entDeptID = document.createElement("label")
-    entDeptID.setAttribute("type","label")
-    entDeptID.setAttribute("id","enter_deptID")
-    entDeptID.textContent = "Department ID: "
-    inpDeptDiv.appendChild(entDeptID)
-
-    let inpDeptID = document.createElement("input")
-    inpDeptID.setAttribute("type","text")
-    inpDeptID.setAttribute("placeholder","Enter Department ID")
-    inpDeptID.setAttribute("id","inp_DeptID")
-    inpDeptID.addEventListener('input',function(event){
-        if(event.target.id === "inp_DeptID"){
-            empObj.deptid = event.target.value
-        }
-    })
-    inpDeptDiv.appendChild(inpDeptID)
-
-    let error = document.createElement("p")
-    error.setAttribute("id","displayerror")
-    addEmpForm.appendChild(error)
+        let inp = document.createElement("input")
+        inp.setAttribute("type","text")
+        inp.setAttribute("id","inp")
+        inp.addEventListener('input',function(event){
+            empObj[formobj[i]] = event.target.value
+        })
+        div.appendChild(inp)
+    }
 
     let sub_res_div = document.createElement("div")
     sub_res_div.setAttribute("id","sub_res_div")
@@ -442,7 +436,6 @@ const openForm = () =>{
     cancelBtn.setAttribute("type","button")
     cancelBtn.setAttribute("id","cancel_btn")
     cancelBtn.textContent = "Cancel"
-    cancelBtn.setAttribute("onclick","cancelform()")
     cancelBtn.addEventListener('click', function(){
         document.getElementById("form_div").remove()
         createTable();

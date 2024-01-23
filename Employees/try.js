@@ -1,7 +1,258 @@
+// renderUI
+// searching
+// sorting
+// openForm
+//-----Pagination------
+//createTable
+// displayArray
+
 let employees = {}
+
+// -------------------------Add Employee-------------------------------------
+
 let empObj = {};
+let num = 1;
+
+const addEmp = () =>{
+    let Emp_id = "Emp" + num;
+    if(empObj.Name === undefined){
+        alert("please enter information")
+    }
+    else{
+        employees[Emp_id] = {
+            "ID": Emp_id,
+            "Name": empObj["Name"],
+            "Salary": empObj["Salary"],
+            "Designation": empObj["Designation"],
+            "Department ID": empObj["Department ID"]
+        }
+        num++;
+        addInList(employees);
+        empObj = {}
+    }
+    console.log(employees)
+    openForm();
+}
+
+let obj_ID = {}
+
+function deleteemp(){
+    console.log()
+    for(let x in employees){
+        if(x === obj_ID.id){
+            delete employees[x];
+            addInList(employees);
+            break;
+        }
+    }
+}
+
+function updateForm(){
+    openForm();
+
+    document.getElementById("title_of_form").textContent = "Update Employee";
+
+    let formdiv = document.getElementById("addEmpFormDiv")
+    formdiv.innerHTML = "";
+
+    for(let x in employees){
+        if(x === obj_ID.id){
+            for(let y in employees[x]){
+                let div = document.createElement("div")
+                div.setAttribute("id","update_att_div")
+                formdiv.appendChild(div)
+
+                let lbl = document.createElement("label")
+                lbl.setAttribute("id","lbldiv")
+                lbl.innerHTML = y +" :"
+                div.appendChild(lbl)
+
+                let inp = document.createElement("input")
+                inp.setAttribute("type","text")
+                inp.setAttribute("id","inp")
+                inp.value = employees[x][y]
+                inp.addEventListener('input',function(event){
+                    empObj[y] = event.target.value
+                })
+                div.appendChild(inp)
+                if(y === "ID"){
+                    inp.setAttribute("disabled","true")
+                }
+            }
+        }
+    }
+    let submit_btn = document.getElementById("submit_btn")
+    submit_btn.textContent = "Update"
+    submit_btn.setAttribute("onclick","updateEmp()")
+}
+
+function updateEmp(){
+    for(let x in employees){
+        if(x === obj_ID.id){
+            if(obj_ID.id in employees){
+                employees[obj_ID.id] = {...employees[obj_ID.id],...empObj}
+                alert("Employee information is successfully updated")
+                addInList(employees);
+                break;
+            }
+            alert("No such employee found. Please check employee ID.")
+            break;
+        }
+    }
+    displayEmp();
+}
+
+function displayEmp(){
+    let main = document.getElementById("main_content_div")
+    main.innerHTML= "";
+    createTable();
+}
+
+function addInList(employees){
+    let list = document.getElementById("emp_list")
+    list.innerHTML = ''
+    for(let x in employees){
+        if(employees.hasOwnProperty(x)){
+            const listItem = document.createElement("li")
+            listItem.id = x
+            let namelbl = document.createElement("label")
+            namelbl.setAttribute("type","lable")
+            namelbl.setAttribute("id","listItem_name")
+            namelbl.textContent= employees[x].Name
+            listItem.addEventListener("click", function(){
+                obj_ID.id = this.id
+            })
+            listItem.appendChild(namelbl)
+            
+            // --------------dropdown-------------------
+
+            let dropDownDiv = document.createElement("div")
+            dropDownDiv.setAttribute("id","drop_down_div")
+            dropDownDiv.setAttribute("class","dropdown")
+            listItem.appendChild(dropDownDiv)
+
+            let menubtn = document.createElement("button")
+            menubtn.setAttribute("id","menu_btn")
+            menubtn.setAttribute("class","dropbtn")
+            menubtn.innerHTML = '<i class="fa-solid fa-ellipsis-vertical"></i>'
+            menubtn.setAttribute("onclick","myFunction()")
+            dropDownDiv.appendChild(menubtn)
+
+            let content_div = document.createElement("div")
+            content_div.setAttribute("id","myDropdown")
+            content_div.setAttribute("class","dropdown-content")
+            dropDownDiv.appendChild(content_div)
+
+            let deleteLink = document.createElement("a")
+            deleteLink.setAttribute("href","#")
+            deleteLink.addEventListener('click',deleteemp)
+            deleteLink.innerHTML = "Delete"
+            content_div.appendChild(deleteLink)
+
+            let updateLink = document.createElement("a")
+            updateLink.setAttribute("href","#")
+            updateLink.addEventListener('click',updateForm)
+            updateLink.innerHTML = "Update"
+            content_div.appendChild(updateLink)
+
+            let displayLink = document.createElement("a")
+            displayLink.setAttribute("href","#")
+            displayLink.innerHTML = "Display"
+            content_div.appendChild(displayLink)
+
+            list.appendChild(listItem)
+        }
+    }
+}
+
+function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
+
+window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+            }
+        }
+    }
+}
+
+
+// ---------------------------------Searching--------------------------------
+
 let filterobj = {}
-let empNameArr = [];
+function searching(){
+    var new_list = {};
+    
+    if(filterobj.searchinp.length>=2){
+        for(let x in employees){
+            let k=0;
+            for(let j=0;j<employees[x].Name.length;j++){
+                if(filterobj.searchinp[k] === employees[x].Name[j]){
+                    k++;
+                    if(k>=filterobj.searchinp.length){
+                        new_list[x] = employees[x]
+                        console.log(new_list)
+                        break;
+                    }
+                }
+                else{
+                    break;
+                }
+            }
+        }
+        if(new_list !== null){
+            addInList(new_list)
+            new_list = {};
+        }
+        else{
+            alert("employee not found")
+            addInList(employees);
+        }
+    }
+    else{
+        alert("please enter minimum two characters")
+        addInList(employees);
+    }
+}
+
+// --------------------------------Sorting------------------------------------
+
+function sorting(clicked_ID){
+    let id = clicked_ID;
+
+    document.querySelectorAll('.sortbtn').forEach(function(btn){
+        btn.style.backgroundColor = 'initial'
+    })
+
+    let listItems = [];
+    for(let x in employees){
+        listItems.push(employees[x])
+    }
+    console.log(listItems)    
+
+    if(id === filterobj['ascID']){
+        listItems.sort(function(a,b){
+            return a.Name.localeCompare(b.Name);
+        });
+    }
+    else{
+        listItems.sort(function(a,b){
+            return b.Name.localeCompare(a.Name);
+        });
+    }
+
+    let sorted_emp_list = {}
+    for(let x in listItems){
+        sorted_emp_list[x] = listItems[x]
+        addInList(sorted_emp_list)
+    }
+}
 
 const renderUI = () =>{
     let main = document.getElementById("root")
@@ -67,22 +318,24 @@ const renderUI = () =>{
 
     let ascBtn = document.createElement("button")
     ascBtn.setAttribute("id","asc_btn")
+    
     ascBtn.setAttribute("class","sortbtn")
     ascBtn.innerHTML = '<i class="fa-solid fa-sort-up"></i>'
     ascBtn.addEventListener('click', function(){
-        ascendingSort();
+        filterobj['ascID'] = this.id
+        sorting(this.id);
         ascBtn.style.backgroundColor = "blue"
-        // ascBtn.style.borderWidth = "3px"
-        
     })
     filterdiv.appendChild(ascBtn)
 
     let dscBtn = document.createElement("button")
     dscBtn.setAttribute("id","dsc_btn")
+    
     dscBtn.setAttribute("class","sortbtn")
     dscBtn.innerHTML = '<i class="fa-solid fa-sort-down"></i>'
     dscBtn.addEventListener('click', function(){
-        decendingSort();
+        filterobj['dscID'] = this.id
+        sorting(this.id);
         dscBtn.style.backgroundColor = "blue"
     })
     filterdiv.appendChild(dscBtn)
@@ -117,6 +370,8 @@ const renderUI = () =>{
 
 const openForm = () =>{
 
+    let formobj = ["ID","Name","Salary","Designation", "Department ID"]
+
     let main = document.getElementById("main_content_div")
     main.innerHTML= "";
 
@@ -125,6 +380,7 @@ const openForm = () =>{
     main.appendChild(formdiv)
 
     let title = document.createElement("h1")
+    title.id = "title_of_form"
     title.textContent = "Add Employee"
     formdiv.appendChild(title)
 
@@ -133,93 +389,32 @@ const openForm = () =>{
     addEmpForm.setAttribute("id","add_emp_form")
     formdiv.appendChild(addEmpForm)
 
-    let inpNameDiv = document.createElement("div")
-    inpNameDiv.setAttribute("id","inp_Name_Div")
-    addEmpForm.appendChild(inpNameDiv)
+    let addEmpFormDiv = document.createElement("div")
+    addEmpFormDiv.setAttribute("id","addEmpFormDiv")
+    addEmpForm.appendChild(addEmpFormDiv)
 
-    let entName = document.createElement("label")
-    entName.setAttribute("type","label")
-    entName.setAttribute("id","enter_name")
-    entName.textContent = "Name*: "
-    inpNameDiv.appendChild(entName)
+    for(let i=0;i<formobj.length;i++){
+        let div = document.createElement("div")
+        div.setAttribute("id","field_div")
+        addEmpFormDiv.appendChild(div)
 
-    let inpName = document.createElement("input")
-    inpName.setAttribute("type","text")
-    inpName.setAttribute("placeholder","Enter Name")
-    inpName.setAttribute("id","inp_Name")
-    inpName.addEventListener('input',function(event){
-        if(event.target.id === "inp_Name"){
-            empObj.name = event.target.value
+        if(formobj[i] === "ID"){
+            continue;
         }
-    })
-    inpNameDiv.appendChild(inpName)
 
-    let inpSalaryDiv = document.createElement("div")
-    inpSalaryDiv.setAttribute("id","inp_Salary_Div")
-    addEmpForm.appendChild(inpSalaryDiv)
+        let lbl = document.createElement("label")
+        lbl.setAttribute("id","lbldiv")
+        lbl.innerHTML = formobj[i] +" :"
+        div.appendChild(lbl)
 
-    let entSalary = document.createElement("label")
-    entSalary.setAttribute("type","label")
-    entSalary.setAttribute("id","enter_Salary")
-    entSalary.textContent = "Salary: "
-    inpSalaryDiv.appendChild(entSalary)
-
-    let inpSalary = document.createElement("input")
-    inpSalary.setAttribute("type","number")
-    inpSalary.setAttribute("placeholder","Enter Salary")
-    inpSalary.setAttribute("id","inp_Salary")
-    inpSalary.addEventListener('click',function(event){
-        if(event.target.id === "inp_Salary"){
-            empObj.salary = event.target.value
-        }
-    })
-    inpSalaryDiv.appendChild(inpSalary)
-
-    let inpDesgDiv = document.createElement("div")
-    inpDesgDiv.setAttribute("id","inp_desg_Div")
-    addEmpForm.appendChild(inpDesgDiv)
-
-    let entDesignation = document.createElement("label")
-    entDesignation.setAttribute("type","label")
-    entDesignation.setAttribute("id","enter_Designation")
-    entDesignation.textContent = "Designation: "
-    inpDesgDiv.appendChild(entDesignation)
-
-    let inpDesignation = document.createElement("input")
-    inpDesignation.setAttribute("type","text")
-    inpDesignation.setAttribute("placeholder","Enter Designation")
-    inpDesignation.setAttribute("id","inp_Designation")
-    inpDesignation.addEventListener('input',function(event){
-        if(event.target.id === "inp_Designation"){
-            empObj.designation = event.target.value
-        }
-    })
-    inpDesgDiv.appendChild(inpDesignation)
-
-    let inpDeptDiv = document.createElement("div")
-    inpDeptDiv.setAttribute("id","inp_dept_Div")
-    addEmpForm.appendChild(inpDeptDiv)
-
-    let entDeptID = document.createElement("label")
-    entDeptID.setAttribute("type","label")
-    entDeptID.setAttribute("id","enter_deptID")
-    entDeptID.textContent = "Department ID: "
-    inpDeptDiv.appendChild(entDeptID)
-
-    let inpDeptID = document.createElement("input")
-    inpDeptID.setAttribute("type","text")
-    inpDeptID.setAttribute("placeholder","Enter Department ID")
-    inpDeptID.setAttribute("id","inp_DeptID")
-    inpDeptID.addEventListener('input',function(event){
-        if(event.target.id === "inp_DeptID"){
-            empObj.deptid = event.target.value
-        }
-    })
-    inpDeptDiv.appendChild(inpDeptID)
-
-    let error = document.createElement("p")
-    error.setAttribute("id","displayerror")
-    addEmpForm.appendChild(error)
+        let inp = document.createElement("input")
+        inp.setAttribute("type","text")
+        inp.setAttribute("id","inp")
+        inp.addEventListener('input',function(event){
+            empObj[formobj[i]] = event.target.value
+        })
+        div.appendChild(inp)
+    }
 
     let sub_res_div = document.createElement("div")
     sub_res_div.setAttribute("id","sub_res_div")
@@ -228,7 +423,7 @@ const openForm = () =>{
     let submitBtn = document.createElement("button")
     submitBtn.setAttribute("id","submit_btn")
     submitBtn.textContent = "Submit"
-    submitBtn.setAttribute("onclick","addEmp(empObj)")
+    submitBtn.setAttribute("onclick","addEmp()")
     sub_res_div.appendChild(submitBtn)
 
     let resetBtn = document.createElement("button")
@@ -241,7 +436,6 @@ const openForm = () =>{
     cancelBtn.setAttribute("type","button")
     cancelBtn.setAttribute("id","cancel_btn")
     cancelBtn.textContent = "Cancel"
-    cancelBtn.setAttribute("onclick","cancelform()")
     cancelBtn.addEventListener('click', function(){
         document.getElementById("form_div").remove()
         createTable();
@@ -387,150 +581,4 @@ function updatepagination(){
     let visibleItemIndex = ((obj.currentPage - 1) * obj.prevItemsPerPage) + 1;
     obj.currentPage = Math.ceil(visibleItemIndex / obj.itemsPerPage);
     displayArray();
-}
-
-
-// -------------------------Add Employee-------------------------------------
-
-let num = 1;
-const addEmp = (empObj) =>{
-    if(empObj.name === undefined){
-        alert("please enter information")
-    }
-    else{
-        let Emp_id = "Emp" + num;
-        employees[Emp_id] = {
-            ID: Emp_id,
-            Name: empObj.name,
-            Salary: empObj.salary,
-            Designation: empObj.designation,
-            Department_ID: empObj.deptid
-        }
-        num++;
-        addInList();
-        empObj.name = undefined
-    }
-    
-    openForm();
-}
-
-console.log(employees)
-
-function addInList(){
-    let list = document.getElementById("emp_list")
-    list.innerHTML = ''
-    for(let x in employees){
-        if(employees.hasOwnProperty(x)){
-            const listItem = document.createElement("li")
-
-            let namelbl = document.createElement("label")
-            namelbl.setAttribute("id","listItem_name")
-            namelbl.textContent= employees[x].Name
-            listItem.appendChild(namelbl)
-
-            let menubtn = document.createElement("button")
-            menubtn.setAttribute("id","menu_btn")
-            menubtn.innerHTML = '<i class="fa-solid fa-ellipsis-vertical"></i>'
-            listItem.appendChild(menubtn)
-            list.appendChild(listItem)
-        }
-    }
-}
-
-
-
-// ---------------------------------Searching--------------------------------
-
-function searching(){
-    let empList = document.getElementById("emp_list");
-    var listItem = Array.from(empList.children)
-
-    var new_list = [];
-    let searchVal = document.getElementById("search_Inp").value
-
-    if(searchVal.length<2 && new_list !== null){
-        empList.innerHTML = ""
-        alert("please enter minimum two characters")
-        addInList();
-    }
-    else if(searchVal.length<2){
-        alert("please enter minimum two characters")
-    }
-    else if(searchVal.length>2 && new_list === null){
-        alert("No employee found")
-        empList.innerHTML = ""
-        addInList();
-    }
-    else{
-        for(let i=0;i<listItem.length;i++){
-            let k=0;
-            for(let j=0;j<listItem[i].textContent.length;j++){
-                if(searchVal[k] === listItem[i].textContent[j]){
-                    k++;
-                    if(k>=searchVal.length){
-                        new_list.push(listItem[i])
-                        break;
-                    }
-                }
-                else{
-                    break;
-                }
-            }
-        }
-        if(new_list !== undefined){
-            empList.innerHTML = "";
-            new_list.forEach(function(item){
-                empList.appendChild(item);
-            })
-            new_list = [];
-        }
-        else{
-            alert("employee not found")
-            addInList();
-        }
-        
-    }
-}
-
-// if(j === listItem[i].textContent.length-1)
-// --------------------------------Sorting------------------------------------
-
-function ascendingSort(){
-    document.querySelectorAll('.sortbtn').forEach(function(btn){
-        btn.style.backgroundColor = 'initial'
-    })
-
-    let empList = document.getElementById("emp_list")
-
-    var listItems = Array.from(empList.children)
-
-    listItems.sort(function(a,b){
-        return a.textContent.localeCompare(b.textContent);
-    });
-
-    empList.innerHTML = "";
-
-    listItems.forEach(function(item){
-        empList.appendChild(item)
-    })
-}
-
-function decendingSort(){
-    document.querySelectorAll('.sortbtn').forEach(function(btn){
-        btn.style.backgroundColor = 'initial'
-    })
-
-    let empList = document.getElementById("emp_list")
-
-    var listItems = Array.from(empList.children)
-
-    listItems.sort(function(a,b){
-        return b.textContent.localeCompare(a.textContent);
-    });
-
-    empList.innerHTML = "";
-
-    listItems.forEach(function(item){
-        empList.appendChild(item)
-    })
 }
